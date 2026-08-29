@@ -1,6 +1,7 @@
 // components/estimator/LiveResultPanel.tsx
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   TaxResult,
@@ -128,7 +129,7 @@ export default function LiveResultPanel({
               <span style={{ color: "#F0F0E0" }}>
                 File your returns to claim this back from KRA.
               </span>{" "}
-              We'll help you do that when we launch.
+              We&apos;ll help you do that when we launch.
             </p>
           ) : isZero ? (
             <p
@@ -368,7 +369,6 @@ export default function LiveResultPanel({
         bands={result.bandBreakdown}
         personalRelief={result.personalRelief}
         whtCredit={result.whtCredit}
-        grossTax={result.grossTax}
         netTax={result.netTax}
       />
 
@@ -483,7 +483,7 @@ function InstallmentSchedulePanel({
             </div>
           ))}
           <div className="px-4 pb-3 pt-2">
-            <a
+            <Link
               href="/blog/installment-tax"
               style={{
                 fontFamily: "var(--font-primary)",
@@ -494,7 +494,7 @@ function InstallmentSchedulePanel({
               }}
             >
               Learn about installment tax →
-            </a>
+            </Link>
           </div>
         </div>
       )}
@@ -508,13 +508,11 @@ function BandBreakdownPanel({
   bands,
   personalRelief,
   whtCredit,
-  grossTax,
   netTax,
 }: {
   bands: BandResult[];
   personalRelief: number;
   whtCredit: number;
-  grossTax: number;
   netTax: number;
 }) {
   const [open, setOpen] = useState(false);

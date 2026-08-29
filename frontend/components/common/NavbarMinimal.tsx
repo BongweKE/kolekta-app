@@ -212,7 +212,7 @@ export default function NavbarMinimal() {
           >
             Tax compliance made simple
             <br />
-            for Kenya's independent workers.
+            for Kenya&apos;s independent workers.
           </p>
         </div>
       </div>

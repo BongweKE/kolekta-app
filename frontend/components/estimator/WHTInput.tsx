@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { parseAmount, formatKES, WHT_LIMITS } from "@/lib/tax-utils";
-import { ACTIVE_TAX_CONFIG } from "@/lib/tax-bands-config";
 
 interface WHTInputProps {
   value: number;

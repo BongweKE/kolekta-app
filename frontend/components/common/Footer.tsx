@@ -77,7 +77,7 @@ export default function Footer() {
               className="text-sm leading-relaxed max-w-[240px]"
               style={{ color: "#7A6645", fontFamily: "DM Sans, sans-serif" }}
             >
-              Tax compliance made simple for Kenya's independent workers,
+              Tax compliance made simple for Kenya&apos;s independent workers,
               creatives, and businesses.
             </p>
 

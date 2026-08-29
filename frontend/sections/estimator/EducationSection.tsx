@@ -50,7 +50,7 @@ export default function EducationSection() {
             lineHeight: 1.2,
           }}
         >
-          How Kenya's tax system works
+          How Kenya&apos;s tax system works
         </h2>
 
         {/* FAQ accordion style */}
@@ -129,7 +129,7 @@ export default function EducationSection() {
                 fontSize: "0.8125rem",
               }}
             >
-              Our knowledge base covers every aspect of Kenya's tax system in
+              Our knowledge base covers every aspect of Kenya&apos;s tax system in
               plain English.
             </p>
           </div>

@@ -41,7 +41,7 @@ export default function EstimatorTool() {
           )}
 
           {/* Section 1 — Income */}
-          <InputSection number={1} label="Your income">
+          <InputSection number={1}>
             <IncomeInput value={grossIncome} onChange={setGrossIncome} />
           </InputSection>
 
@@ -49,7 +49,7 @@ export default function EstimatorTool() {
           <div style={{ borderTop: "1px solid #DDDDC8" }} />
 
           {/* Section 2 — Expenses */}
-          <InputSection number={2} label="Your deductions">
+          <InputSection number={2}>
             <ExpenseAssistant
               expenses={expenses}
               grossIncome={grossIncome}
@@ -62,7 +62,7 @@ export default function EstimatorTool() {
           <div style={{ borderTop: "1px solid #DDDDC8" }} />
 
           {/* Section 3 — WHT */}
-          <InputSection number={3} label="Tax already paid">
+          <InputSection number={3}>
             <WHTInput
               value={withholdingTax}
               grossIncome={grossIncome}
@@ -136,11 +136,9 @@ export default function EstimatorTool() {
 
 function InputSection({
   number,
-  label,
   children,
 }: {
   number: number;
-  label: string;
   children: React.ReactNode;
 }) {
   return (
@@ -171,7 +169,7 @@ function InputSection({
 
 // ── Mobile condensed result ────────────────────────────────────
 
-import { TaxResult, formatPercent } from "@/lib/tax-utils";
+import { TaxResult } from "@/lib/tax-utils";
 
 function MobileLiveResult({ result }: { result: TaxResult }) {
   const isRefund = result.refundDue > 0;

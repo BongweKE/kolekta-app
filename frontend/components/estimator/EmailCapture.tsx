@@ -163,7 +163,7 @@ export default function EmailCapture({
           lineHeight: 1.5,
         }}
       >
-        We'll send a personalised summary of your{" "}
+        We&apos;ll send a personalised summary of your{" "}
         <strong style={{ fontFamily: "var(--font-code)", color: "#003020" }}>
           {formatKES(result.netTax)}
         </strong>{" "}

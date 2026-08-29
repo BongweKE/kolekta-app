@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { sanityFetch } from "@/lib/sanity/live";
+import { POSTS_QUERY, CATEGORIES_QUERY } from "@/lib/sanity/queries";
+import type { PostSummary } from "@/lib/sanity/types";
+import { SanityImage } from "@/components/common/SanityImage";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -7,72 +11,24 @@ export const metadata: Metadata = {
     "Tax guides, KRA updates, and practical advice for Kenya's independent workers and creatives.",
 };
 
-// Placeholder posts — replace with Sanity CMS data
-const posts = [
-  {
-    slug: "paye-guide-2026",
-    category: "PAYE",
-    title: "How PAYE Actually Works in Kenya — A Plain English Guide",
-    excerpt:
-      "Most people know PAYE exists. Very few know how it is calculated. Here is every step explained simply.",
-    readTime: "8 min read",
-    date: "May 2026",
-    featured: true,
-  },
-  {
-    slug: "allowable-expenses-creatives",
-    category: "Deductions",
-    title: "What Kenyan Creatives Can Claim as Business Expenses",
-    excerpt:
-      "From Adobe subscriptions to Uber rides to shoots — a full breakdown of what you can legally deduct.",
-    readTime: "6 min read",
-    date: "May 2026",
-    featured: false,
-  },
-  {
-    slug: "kra-itax-guide",
-    category: "KRA",
-    title: "How to File Your Returns on iTax — Step by Step",
-    excerpt:
-      "iTax does not have to be terrifying. Here is a walkthrough of every screen from login to submission.",
-    readTime: "12 min read",
-    date: "April 2026",
-    featured: false,
-  },
-  {
-    slug: "vat-registration-kenya",
-    category: "VAT",
-    title: "When Do You Need to Register for VAT in Kenya?",
-    excerpt:
-      "The KES 5 million threshold, what it means for your business, and what happens if you cross it.",
-    readTime: "5 min read",
-    date: "April 2026",
-    featured: false,
-  },
-  {
-    slug: "freelancer-tax-pin",
-    category: "Getting Started",
-    title: "Getting Your KRA PIN as a Freelancer — Everything You Need",
-    excerpt:
-      "No PIN means no business. Here is how to register with KRA and what to do if you have never filed.",
-    readTime: "4 min read",
-    date: "March 2026",
-    featured: false,
-  },
-];
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-KE", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
-const categories = [
-  "All",
-  "PAYE",
-  "VAT",
-  "KRA",
-  "Deductions",
-  "Getting Started",
-];
+export default async function BlogPage() {
+  const { data: posts } = (await sanityFetch({
+    query: POSTS_QUERY,
+  })) as { data: PostSummary[] };
+  const { data: categories } = (await sanityFetch({
+    query: CATEGORIES_QUERY,
+  })) as { data: { _id: string; title: string }[] };
 
-export default function BlogPage() {
-  const featured = posts.find((p) => p.featured);
-  const rest = posts.filter((p) => !p.featured);
+  const featured = posts.find((p: PostSummary) => p.featured);
+  const rest = posts.filter((p: PostSummary) => !p.featured);
 
   return (
     <div className="relative">
@@ -106,7 +62,7 @@ export default function BlogPage() {
               lineHeight: 1.7,
             }}
           >
-            Plain English guides on Kenya's tax system — written for
+            Plain English guides on Kenya&apos;s tax system — written for
             freelancers, creatives, and independent workers.
           </p>
         </div>
@@ -116,33 +72,29 @@ export default function BlogPage() {
           className="flex gap-2 flex-wrap pb-8 border-b"
           style={{ borderColor: "#DDDDC8" }}
         >
-          {categories.map((cat, i) => (
-            <button
-              key={cat}
-              className="px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
-              style={{
-                fontFamily: "var(--font-primary)",
-                backgroundColor: i === 0 ? "#003020" : "#E8E8D0",
-                color: i === 0 ? "#F0F0E0" : "#616150",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              {cat}
-            </button>
-          ))}
+          {["All", ...categories.map((c: { title: string }) => c.title)].map(
+            (cat, i) => (
+              <button
+                key={cat}
+                className="px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
+                style={{
+                  fontFamily: "var(--font-primary)",
+                  backgroundColor: i === 0 ? "#003020" : "#E8E8D0",
+                  color: i === 0 ? "#F0F0E0" : "#616150",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                {cat}
+              </button>
+            )
+          )}
         </div>
 
         {/* Featured post */}
         {featured && (
-          <div
-            className="padding-y border-b"
-            style={{ borderColor: "#DDDDC8" }}
-          >
-            <Link
-              href={`/blog/${featured.slug}`}
-              className="group block no-underline"
-            >
+          <div className="padding-y border-b" style={{ borderColor: "#DDDDC8" }}>
+            <Link href={`/blog/${featured.slug}`} className="group block no-underline">
               <div
                 className="rounded-2xl p-8 md:p-12 transition-all duration-300 group-hover:shadow-lg"
                 style={{
@@ -151,7 +103,6 @@ export default function BlogPage() {
                   overflow: "hidden",
                 }}
               >
-                {/* Background decoration */}
                 <div
                   className="absolute top-0 right-0 opacity-10 pointer-events-none"
                   style={{
@@ -184,7 +135,7 @@ export default function BlogPage() {
                         fontFamily: "var(--font-primary)",
                       }}
                     >
-                      {featured.category}
+                      {featured.category?.title ?? "Kolekta"}
                     </span>
                   </div>
 
@@ -201,6 +152,17 @@ export default function BlogPage() {
                   >
                     {featured.title}
                   </h2>
+
+                  {featured.coverImage?.asset && (
+                    <div className="relative mb-6 rounded-xl overflow-hidden" style={{ height: 220, maxWidth: 420 }}>
+                      <SanityImage
+                        value={featured.coverImage}
+                        fill
+                        className="object-cover"
+                        sizes="420px"
+                      />
+                    </div>
+                  )}
 
                   <p
                     style={{
@@ -221,7 +183,7 @@ export default function BlogPage() {
                       fontSize: "0.8125rem",
                     }}
                   >
-                    <span>{featured.date}</span>
+                    <span>{formatDate(featured.publishedAt)}</span>
                     <span>·</span>
                     <span>{featured.readTime}</span>
                     <span
@@ -240,9 +202,9 @@ export default function BlogPage() {
         {/* Post grid */}
         <div className="padding-y">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {rest.map((post) => (
+            {rest.map((post: PostSummary) => (
               <Link
-                key={post.slug}
+                key={post._id}
                 href={`/blog/${post.slug}`}
                 className="group block no-underline"
               >
@@ -253,6 +215,17 @@ export default function BlogPage() {
                     border: "1px solid #DDDDC8",
                   }}
                 >
+                  {post.coverImage?.asset && (
+                    <div className="relative mb-4 rounded-lg overflow-hidden" style={{ height: 160 }}>
+                      <SanityImage
+                        value={post.coverImage}
+                        fill
+                        className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between mb-4">
                     <span
                       className="text-xs font-semibold px-2.5 py-1 rounded-full"
@@ -264,7 +237,7 @@ export default function BlogPage() {
                         textTransform: "uppercase",
                       }}
                     >
-                      {post.category}
+                      {post.category?.title ?? "Kolekta"}
                     </span>
                     <span
                       className="text-xs"
@@ -310,7 +283,7 @@ export default function BlogPage() {
                       color: "#8A8A72",
                     }}
                   >
-                    <span>{post.date}</span>
+                    <span>{formatDate(post.publishedAt)}</span>
                     <span
                       className="group-hover:translate-x-1 transition-transform duration-200 inline-block"
                       style={{ color: "#20A160" }}
@@ -350,7 +323,7 @@ export default function BlogPage() {
                 fontSize: "0.8125rem",
               }}
             >
-              We are publishing guides on every aspect of Kenya's tax system for
+              We are publishing guides on every aspect of Kenya&apos;s tax system for
               independent workers.
             </p>
           </div>

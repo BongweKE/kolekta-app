@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 const footerLinks = [
+  { label: "Tax Estimator", href: "/estimator" },
+  { label: "Blog", href: "/blog" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
   { label: "Disclaimer", href: "/disclaimer" },

@@ -20,3 +20,6 @@ build/
 
 # Sanity
 studio/.sanity/
+
+# Temporary downloaded stock photos for content seeding (gitignored)
+.seed-images/

@@ -38,9 +38,7 @@ export default function MarketingHero() {
   };
 
   return (
-    <div className="relative flex items-center md:items-center justify-center md:justify-between gap-10 min-h-[calc(100vh-160px)] md:min-h-0">
-     
-
+    <div className="relative flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 md:gap-10 min-h-[calc(100vh-160px)] md:min-h-0">
       {/* ── Text content ─────────────────────────── */}
       <div className="relative z-10 flex flex-col gap-6 w-full md:w-1/2 text-left items-start justify-center">
         <TextRotator />
@@ -60,8 +58,33 @@ export default function MarketingHero() {
           className="text-lg md:text-xl font-semibold max-w-[380px]"
           style={{ color: "var(--color-kolekta-charcoal)" }}
         >
-          We're building something cool...stay tuned!
+          We&apos;re building something cool...stay tuned!
         </h4>
+      </div>
+
+      {/* ── Mobile scrollable image strip ────────── */}
+      <div
+        className="md:hidden w-full -mx-5 px-5 flex gap-3 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-px-5"
+        role="list"
+        aria-label="Kenyan creatives at work"
+        style={{ paddingBottom: "0.25rem" }}
+      >
+        {carouselImages.map((img) => (
+          <div
+            key={img.src}
+            role="listitem"
+            className="snap-center shrink-0 relative overflow-hidden rounded-xl"
+            style={{ width: "16rem", height: "12rem" }}
+          >
+            <Image
+              src={img.src}
+              alt={img.alt}
+              fill
+              className="object-cover"
+              sizes="256px"
+            />
+          </div>
+        ))}
       </div>
 
       {/* ── Carousel ─────────────────────────────── */}

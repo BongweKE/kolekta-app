@@ -1,7 +1,7 @@
 // lib/tax-utils.ts
 // Pure functions — no side effects, fully testable
 
-import { ACTIVE_TAX_CONFIG, TaxBand, TaxConfig } from "./tax-bands-config";
+import { ACTIVE_TAX_CONFIG, TaxConfig } from "./tax-bands-config";
 
 export interface BandResult {
   label: string;

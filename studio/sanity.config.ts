@@ -5,9 +5,9 @@ import {schemaTypes} from './schemaTypes'
 
 export default defineConfig({
   name: 'default',
-  title: 'kolekta-app',
+  title: 'kolekta',
 
-  projectId: 'u0bts60c',
+  projectId: 'pg78qsiy',
   dataset: 'production',
 
   plugins: [structureTool(), visionTool()],
