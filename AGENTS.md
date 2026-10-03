@@ -9,7 +9,7 @@ Tax compliance web application for Kenya's independent workers and creatives.
 - `docs/` — Internal documentation
 
 ## Sanity CMS
-- **Project:** kolekta — id `pg78qsiy` (org `ow02tlfnv`)
+- **Project:** kolekta — id `998ifqep` (org `o4qckorzc`)
 - **Dataset:** `production`
 - **Studio:** standalone at repo root `studio/`. Keep it standalone — do NOT embed into the app.
 - **Auth:** use a robot API token for CLI/API work. It is stored locally in the repo-root
@@ -30,7 +30,7 @@ Tax compliance web application for Kenya's independent workers and creatives.
     (`app/(marketing)/blog/[slug]/page.tsx`, uses `generateStaticParams` + PortableText).
   - Uses `next-sanity` (v13) + `@sanity/image-url`. Covers served via `next/image` from
     `cdn.sanity.io` (whitelisted in `frontend/next.config.ts` `images.remotePatterns`).
-  - Env (`frontend/.env.local`, gitignored): `NEXT_PUBLIC_SANITY_PROJECT_ID=pg78qsiy`,
+  - Env (`frontend/.env.local`, gitignored): `NEXT_PUBLIC_SANITY_PROJECT_ID=998ifqep`,
     `NEXT_PUBLIC_SANITY_DATASET=production`, optional `SANITY_API_READ_TOKEN` for live content.
   - `<SanityLive />` is mounted in `app/layout.tsx`.
 - **Gotchas learned here:**

@@ -52,7 +52,7 @@ const structure: StructureResolver = (S) =>
 export default defineConfig({
   name: 'default',
   title: 'kolekta',
-  projectId: 'pg78qsiy',
+  projectId: '998ifqep',
   dataset: 'production',
   plugins: [structureTool({structure}), visionTool()],
   schema: {

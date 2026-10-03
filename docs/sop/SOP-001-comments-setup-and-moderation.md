@@ -2,24 +2,26 @@
 
 ## 1. One-time setup
 
-### 1.1 Create a scoped API token (Sanity manage)
+### 1.1 Create an API token (Sanity manage)
 
-1. Go to <https://www.sanity.io/manage> → project `pg78qsiy` → **API** → **Tokens** →
-   **Add API token**.
-2. Name it `comments-write`, and attach it to a **custom role** (create via
-   **Manage** → **Roles** → **Create role**):
-   - Role name: `Commenter`
-   - Permissions: **Create** only, for document type `comment`. No read/update/delete
-     on any other type. (If custom roles are unavailable on your plan, use an
-     Editor token as a stopgap and rotate it regularly.)
-3. Copy the token into `frontend/.env.local` (gitignored):
+1. Go to <https://www.sanity.io/manage> → project `998ifqep` (org `o4qckorzc`) →
+   **API** → **Tokens** → **Add API token**.
+2. Name it `comments-write` (the name appears in audit logs).
+3. Role: **Editor**. Custom create-only roles (e.g. a `Commenter` role limited to
+   creating `comment` documents) are an Enterprise-plan feature — use Editor for now.
+   The token is server-side only (never a `NEXT_PUBLIC_*` var) and the API route is the
+   only writer, creating unapproved `comment` documents and nothing else. If the plan
+   is upgraded later, tighten this to a create-only custom role.
+4. Optionally set an expiration (30/60/90-day preset or custom) and note the rotation date.
+5. Copy the token immediately — Sanity shows it only once. If lost, delete the robot and
+   create a new one.
 
-   ```
-   SANITY_API_READ_TOKEN=<existing read token, if used>
-   SANITY_API_WRITE_TOKEN=<new comments-write token>
-   COMMENTS_RATE_LIMIT=5
-   COMMENTS_RATE_LIMIT_WINDOW_MS=60000
-   ```
+```
+SANITY_API_READ_TOKEN=<existing read token, if used>
+SANITY_API_WRITE_TOKEN=<new comments-write token>
+COMMENTS_RATE_LIMIT=5
+COMMENTS_RATE_LIMIT_WINDOW_MS=60000
+```
 
 4. Also add `SANITY_API_WRITE_TOKEN` as a **secret** in the Vercel project
    (Settings → Environment Variables) so production deployments can save comments.
