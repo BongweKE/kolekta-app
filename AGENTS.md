@@ -50,3 +50,35 @@ Tax compliance web application for Kenya's independent workers and creatives.
     gitignored `.seed-images/`.
 - Marketing/blog content was previously hardcoded placeholders; the blog is now Sanity-backed.
 - Run lint: `npm run lint` (eslint). Run dev: `npm run dev` (port 3000).
+
+## Blog comments (first-party, Sanity-backed)
+
+- Studio schema: `studio/schemaTypes/comment.ts` (`name`, `email` private, `body`, `post` ref, `approved`).
+- New comments are created `approved: false` — moderation happens in the Studio
+  (Comments → Pending moderation list).
+- Submission API: `frontend/app/api/comments/route.ts` (POST = submit, GET = list approved).
+  Writes go through `frontend/lib/sanity/writeClient.ts` using `SANITY_API_WRITE_TOKEN`
+  (server-only, never exposed to the browser). Validate + rate limit per IP first.
+- Frontend UI: `frontend/components/blog/Comments.tsx` + `CommentForm.tsx`, rendered on
+  `/blog/[slug]` with the site design tokens.
+- Docs: `docs/adr/ADR-001-blog-comments.md` (decision), `docs/sop/SOP-001-comments-setup-and-moderation.md` (setup + moderation runbook).
+- The write token must be scoped to a custom Sanity role that can only create `comment` docs.
+
+## Documentation conventions
+
+- `docs/adr/` — Architecture Decision Records (ADR-NNN-slug.md) for any non-trivial tech decision.
+- `docs/sop/` — Standard Operating Procedures (SOP-NNN-slug.md) for recurring operational tasks.
+- `docs/guidelines/issue-guidelines.md` — how we use GitHub issues (labels, templates, issue→PR flow).
+- `.github/ISSUE_TEMPLATE/` — bug report and feature request templates; keep in sync with guidelines.
+- `.github/pull_request_template.md` — PR checklist incl. docs (ADR/SOP) verification.
+
+## CI/CD
+
+- `.github/workflows/ci.yml` — path-filtered matrix: frontend (tsc + eslint + next build),
+  studio (tsc + eslint on schema/config + sanity build), backend (tsc + build + health smoke test),
+  docs (markdown link check). Uses `npm ci`, Node 22, concurrency cancel on superseded runs.
+- `.github/workflows/deploy.yml` — Vercel prod deploy on `main`, gated on CI success for the same
+  commit, with a post-deploy comment endpoint check. Requires repo secrets:
+  `SANITY_API_READ_TOKEN`, `SANITY_API_WRITE_TOKEN` and vars `NEXT_PUBLIC_SANITY_PROJECT_ID`,
+  `NEXT_PUBLIC_SANITY_DATASET` (Vercel side too).
+- When adding env vars, update `frontend/.env.example` and both workflows.

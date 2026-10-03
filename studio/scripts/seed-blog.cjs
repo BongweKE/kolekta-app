@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Seed script for the Kolekta blog.
  * Uploads cover images and creates author, categories, and posts.

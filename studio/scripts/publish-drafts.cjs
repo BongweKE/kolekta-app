@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Publish all draft documents (author, categories, posts) so the
  * public frontend can read them.
