@@ -54,7 +54,6 @@ jobs:
           SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
           SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
       - name: Deploy to Vercel (production)
-        working-directory: frontend
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -64,17 +63,17 @@ jobs:
           # Only pass --build-env flags for values that are actually set;
           # empty ones would override the code's built-in defaults with blanks.
           ARGS=""
-          if [ -n "$NEXT_PUBLIC_SANITY_PROJECT_ID" ]; then
-            ARGS="$ARGS --build-env NEXT_PUBLIC_SANITY_PROJECT_ID=$NEXT_PUBLIC_SANITY_PROJECT_ID"
+          if [ -n "${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}" ]; then
+            ARGS="$ARGS --build-env NEXT_PUBLIC_SANITY_PROJECT_ID=${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}"
           fi
-          if [ -n "$NEXT_PUBLIC_SANITY_DATASET" ]; then
-            ARGS="$ARGS --build-env NEXT_PUBLIC_SANITY_DATASET=$NEXT_PUBLIC_SANITY_DATASET"
+          if [ -n "${{ vars.NEXT_PUBLIC_SANITY_DATASET }}" ]; then
+            ARGS="$ARGS --build-env NEXT_PUBLIC_SANITY_DATASET=${{ vars.NEXT_PUBLIC_SANITY_DATASET }}"
           fi
-          if [ -n "$SANITY_API_READ_TOKEN" ]; then
-            ARGS="$ARGS --build-env SANITY_API_READ_TOKEN=$SANITY_API_READ_TOKEN"
+          if [ -n "${{ secrets.SANITY_API_READ_TOKEN }}" ]; then
+            ARGS="$ARGS --build-env SANITY_API_READ_TOKEN=${{ secrets.SANITY_API_READ_TOKEN }}"
           fi
-          if [ -n "$SANITY_API_WRITE_TOKEN" ]; then
-            ARGS="$ARGS --build-env SANITY_API_WRITE_TOKEN=$SANITY_API_WRITE_TOKEN"
+          if [ -n "${{ secrets.SANITY_API_WRITE_TOKEN }}" ]; then
+            ARGS="$ARGS --build-env SANITY_API_WRITE_TOKEN=${{ secrets.SANITY_API_WRITE_TOKEN }}"
           fi
           vercel deploy --prod --yes $ARGS
       - name: Verify comments endpoint
