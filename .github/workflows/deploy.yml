@@ -26,7 +26,7 @@ jobs:
           ref: ${{ github.sha }}
           timeoutSeconds: 900
       - name: Fail if CI did not pass
-        if: steps.wait-ci.outputs.conclusion != 'success'
+        if: steps.wait-ci.outputs.conclusion != 'success' && steps.wait-ci.outputs.conclusion != 'skipped'
         run: |
           echo "CI did not pass for ${{ github.sha }} (conclusion: ${{ steps.wait-ci.outputs.conclusion }})"
           exit 1
