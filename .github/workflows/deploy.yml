@@ -61,14 +61,29 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npm install -g vercel@latest
-          vercel deploy --prod --yes \
-            --build-env NEXT_PUBLIC_SANITY_PROJECT_ID=${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }} \
-            --build-env NEXT_PUBLIC_SANITY_DATASET=${{ vars.NEXT_PUBLIC_SANITY_DATASET }} \
-            --build-env SANITY_API_READ_TOKEN=${{ secrets.SANITY_API_READ_TOKEN }} \
-            --build-env SANITY_API_WRITE_TOKEN=${{ secrets.SANITY_API_WRITE_TOKEN }}
+          # Only pass --build-env flags for values that are actually set;
+          # empty ones would override the code's built-in defaults with blanks.
+          ARGS=""
+          if [ -n "$NEXT_PUBLIC_SANITY_PROJECT_ID" ]; then
+            ARGS="$ARGS --build-env NEXT_PUBLIC_SANITY_PROJECT_ID=$NEXT_PUBLIC_SANITY_PROJECT_ID"
+          fi
+          if [ -n "$NEXT_PUBLIC_SANITY_DATASET" ]; then
+            ARGS="$ARGS --build-env NEXT_PUBLIC_SANITY_DATASET=$NEXT_PUBLIC_SANITY_DATASET"
+          fi
+          if [ -n "$SANITY_API_READ_TOKEN" ]; then
+            ARGS="$ARGS --build-env SANITY_API_READ_TOKEN=$SANITY_API_READ_TOKEN"
+          fi
+          if [ -n "$SANITY_API_WRITE_TOKEN" ]; then
+            ARGS="$ARGS --build-env SANITY_API_WRITE_TOKEN=$SANITY_API_WRITE_TOKEN"
+          fi
+          vercel deploy --prod --yes $ARGS
       - name: Verify comments endpoint
         run: |
           sleep 20
-          curl -fsS "https://kolekta.co.ke/api/comments?slug=kra-itax-guide" \
-            || curl -fsS "${{ secrets.DEPLOY_URL }}/api/comments?slug=kra-itax-guide" \
-            || echo "WARN: could not reach comments endpoint — verify manually"
+          URL="${{ secrets.DEPLOY_URL }}"
+          if [ -n "$URL" ]; then
+            curl -fsS "$URL/api/comments?slug=kra-itax-guide" \
+              || echo "WARN: could not reach comments endpoint — verify manually"
+          else
+            echo "DEPLOY_URL secret not set; skipping endpoint check"
+          fi
