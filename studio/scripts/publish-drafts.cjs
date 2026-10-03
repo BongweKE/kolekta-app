@@ -15,7 +15,7 @@ if (!token) {
 }
 
 const client = createClient({
-  projectId: 'pg78qsiy',
+  projectId: '998ifqep',
   dataset: 'production',
   apiVersion: '2026-08-29',
   token,
