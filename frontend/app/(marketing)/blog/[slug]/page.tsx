@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortableText } from "next-sanity";
 import { sanityFetch } from "@/lib/sanity/live";
-import { POST_QUERY, POST_SLUGS_QUERY } from "@/lib/sanity/queries";
-import type { Post } from "@/lib/sanity/types";
+import { POST_QUERY, POST_SLUGS_QUERY, COMMENTS_QUERY } from "@/lib/sanity/queries";
+import type { Post, PostComment } from "@/lib/sanity/types";
 import { SanityImage } from "@/components/common/SanityImage";
+import { Comments } from "@/components/blog/Comments";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -52,6 +53,13 @@ export default async function PostPage({ params }: Props) {
   })) as { data: Post | null };
 
   if (!post) notFound();
+
+  const { data: comments } = (await sanityFetch({
+    query: COMMENTS_QUERY,
+    params: { slug },
+    perspective: "published",
+    stega: false,
+  })) as { data: PostComment[] };
 
   return (
     <div className="relative">
@@ -191,6 +199,8 @@ export default async function PostPage({ params }: Props) {
               This article is being written. Check back soon.
             </p>
           )}
+
+          <Comments postSlug={slug} comments={comments} />
 
           <div
             className="mt-12 pt-8 border-t"

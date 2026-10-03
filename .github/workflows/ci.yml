@@ -6,32 +6,126 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  frontend-checks:
+  changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      studio: ${{ steps.filter.outputs.studio }}
+      backend: ${{ steps.filter.outputs.backend }}
+      docs: ${{ steps.filter.outputs.docs }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+            studio:
+              - 'studio/**'
+              - '.github/workflows/ci.yml'
+            backend:
+              - 'backend/**'
+              - '.github/workflows/ci.yml'
+            docs:
+              - 'docs/**'
+              - '*.md'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+  frontend-checks:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-
       - name: Install dependencies
-        run: npm install
-        working-directory: frontend
-
-      - name: Check for code formatting
+        run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Lint
         run: npm run lint
-        working-directory: frontend
-
-      - name: Build the project
+      - name: Build
         run: npm run build
-        working-directory: frontend
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
+          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+
+  studio-checks:
+    needs: changes
+    if: needs.changes.outputs.studio == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Lint (schema and config only)
+        run: npx eslint sanity.config.ts schemaTypes
+      - name: Build Studio
+        run: npm run build
+
+  backend-checks:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Build
+        run: npm run build
+      - name: Smoke test
+        run: |
+          node dist/index.js &
+          sleep 3
+          curl -fsS http://localhost:5000/health | grep -q '"status":"OK"' && echo "Health check passed"
+          kill %1
+
+  docs-check:
+    needs: changes
+    if: needs.changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check markdown links in docs
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          folder-path: docs
+          config-file: .github/markdown-link-check.json
+          check-modified-files-only: false

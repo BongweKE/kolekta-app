@@ -43,3 +43,10 @@ export interface PostSummary {
 export interface Post extends PostSummary {
   body?: PortableTextBlock[] | null;
 }
+
+export interface PostComment {
+  _id: string;
+  _createdAt: string;
+  name: string;
+  body: string;
+}
